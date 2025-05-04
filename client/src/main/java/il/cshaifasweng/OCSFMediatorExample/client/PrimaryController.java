@@ -12,7 +12,7 @@ import javafx.scene.input.MouseEvent;
 
 public class PrimaryController {
 
-	@FXML // fx:id="TEXT"
+	@FXML // fx:id="TEXt"
 	private Label TEXT; // Value injected by FXMLLoader
 
 	@FXML // fx:id="button1"

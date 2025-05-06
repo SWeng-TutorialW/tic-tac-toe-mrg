@@ -31,7 +31,7 @@ public class SimpleClient extends AbstractClient {
 	protected void handleMessageFromServer(Object msg) {
 
 		if (msg.toString().startsWith("GAME_FULL")) {
-			System.out.println("GAME_FULL ");
+			System.out.println("GAME_FULL");
 			exit(1);
 		}
 		if (msg.toString().startsWith("PLAYER")) {

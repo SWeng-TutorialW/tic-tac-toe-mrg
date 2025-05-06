@@ -30,7 +30,7 @@ public class SimpleClient extends AbstractClient {
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 
-		if (msg.toString().startsWith("GAME _ FULL")) {
+		if (msg.toString().startsWith("GAME_FULL")) {
 			System.out.println("GAME_FULL");
 			exit(1);
 		}

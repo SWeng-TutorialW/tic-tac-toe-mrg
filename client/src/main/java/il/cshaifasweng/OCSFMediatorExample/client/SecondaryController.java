@@ -44,7 +44,7 @@ public class SecondaryController {
             int col = btnID.charAt(4) - '0';
             client.sendMoveToServer(row, col);
         } else {
-            System.out.println("it's not your turn");
+            System.out.println(" It's not your turn ");
         }
     }
 

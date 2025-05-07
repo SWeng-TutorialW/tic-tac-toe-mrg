@@ -8,68 +8,65 @@ import javafx.scene.control.Label;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import javafx.application.Platform;
-
+import java.util.Arrays;
+import java.util.List;
 
 public class SecondaryController {
     @FXML
-    private Button btn00,btn01,btn02,btn10,btn11,btn12,btn20,btn21,btn22;
+    private Button btn00, btn01, btn02, btn10, btn11, btn12, btn20, btn21, btn22;
     @FXML
     private Label textLabel;
 
     private SimpleClient client;
-    int currentTurn ;
+    int currentTurn;
 
-
-
-    public void initialize()
-    {
+    public void initialize() {
         client = SimpleClient.getClient();
-        client.setPlayerNumber((client.getPlayerNumber()));
-        System.out.println("Current Player Number: " + client.getPlayerNumber() + " secondaryController");
-        EventBus.getDefault().register(this);
         currentTurn = client.getCurrentTurn();
+        EventBus.getDefault().register(this);
+
+        List<Button> allButtons = Arrays.asList(btn00, btn01, btn02, btn10, btn11, btn12, btn20, btn21, btn22);
+        for (Button b : allButtons) {
+            removeButtonGlow(b);
+        }
+
+        System.out.println("Current Player Number: " + client.getPlayerNumber() + " secondaryController");
     }
 
+
+
     @FXML
-    public void fillBoardOnClick (ActionEvent event) throws IOException {
+    public void fillBoardOnClick(ActionEvent event) throws IOException {
         if (client.getPlayerNumber() == currentTurn) {
             Button currentButton = (Button) event.getSource();
             String btnID = currentButton.getId(); // e.g., "btn00"
-
-            // Extract row and column from the button ID
             int row = btnID.charAt(3) - '0';
             int col = btnID.charAt(4) - '0';
-
-            // Send move to the server
             client.sendMoveToServer(row, col);
+        } else {
+            System.out.println("it's not your turn");
         }
-        else System.out.println("its not your turn");
     }
 
-
     @Subscribe
-    public void Win (String winner){
+    public void Win(String winner) {
         Platform.runLater(() -> {
             if (winner.startsWith("Winner")) {
                 disableAllButtons();
                 if (winner.contains("X")) {
-                    System.out.println("Player1 Wins");
                     if (client.getPlayerNumber() == 1) {
                         textLabel.setText("You Win!");
                     } else {
                         textLabel.setText("You Lose!");
                     }
                 } else {
-                    System.out.println("Player2 Wins!");
                     if (client.getPlayerNumber() == 1) {
                         textLabel.setText("You Lose!");
                     } else {
                         textLabel.setText("You Win!");
                     }
                 }
-            }
-
-            if (winner.startsWith("Draw")) {
+            } else if (winner.startsWith("Draw")) {
                 disableAllButtons();
                 textLabel.setText("It's a Draw!");
             }
@@ -77,31 +74,73 @@ public class SecondaryController {
     }
 
     @Subscribe
-    public void onMoveEvent (MoveEvent move) {
-        System.out.println("MoveEvent: Row=" + move.getRow() + ", Col=" + move.getCol() + ", Mark=" + move.getMark());
-        Button button = getButtonByPosition(move.getRow(), move.getCol());
-        if (button != null) {
-            Platform.runLater(() -> {
-                button.setText(String.valueOf(move.getMark())); // Update the text
-                button.setDisable(true); // Disable the button after updating text
-                System.out.println("Button updated and disabled: " + button.getId());
-            });
+    public void onMoveEvent(MoveEvent move) {
+        Platform.runLater(() -> {
+            Button button = getButtonByPosition(move.getRow(), move.getCol());
+            if (button != null) {
+                button.setText(String.valueOf(move.getMark()));
 
-            System.out.println("Button updated: " + button.getId());
-        } else {
-            System.out.println("Button not found for: Row=" + move.getRow() + ", Col=" + move.getCol());
-        }
+                button.setStyle(
+                        "-fx-text-fill: " + (move.getMark() == 'X' ? "blue" : "red") + ";" +
+                                "-fx-font-weight: bold;" +
+                                "-fx-font-size: 24px;" +
+                                "-fx-background-insets: 0;" +
+                                "-fx-focus-color: transparent;" +
+                                "-fx-faint-focus-color: transparent;" +
+                                "-fx-background-color: transparent;" +
+                                "-fx-effect: none;"
+                );
+
+                button.setDisable(true);
+            }
+        });
     }
+
 
     @Subscribe
     public void onTurnUpdate(String turnInfo) {
-        // Update the current turn
-        if (turnInfo.startsWith("TURN"))
+        if (turnInfo.startsWith("TURN")) {
             currentTurn = Integer.parseInt(turnInfo.split(" ")[1]);
-        // updateTurnLabel(currentTurn);
+            Platform.runLater(this::updateButtonGlowForTurn);
+        }
     }
+
+    private void removeButtonGlow(Button button) {
+        button.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent; -fx-effect: none;");
+        button.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (isNowFocused) {
+                button.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent; -fx-effect: none;");
+            }
+        });
+    }
+
+
+    private void updateButtonGlowForTurn() {
+        Button[] allButtons = {
+                btn00, btn01, btn02,
+                btn10, btn11, btn12,
+                btn20, btn21, btn22
+        };
+
+
+        for (Button btn : allButtons) {
+
+
+            if (!btn.isDisabled()) {
+
+                if (client.getPlayerNumber() == currentTurn) {
+                    btn.setStyle("-fx-border-color: skyblue; -fx-border-width: 3; -fx-border-radius: 5;");
+                } else {
+                    btn.setStyle(""); // remove glow if it's not your turn
+                }
+            } else {
+                btn.setStyle(""); // also clear style for disabled buttons
+            }
+        }
+    }
+
+
     private Button getButtonByPosition(int row, int col) {
-        // Return the corresponding button based on row and column
         if (row == 0 && col == 0) return btn00;
         if (row == 0 && col == 1) return btn01;
         if (row == 0 && col == 2) return btn02;
@@ -113,6 +152,7 @@ public class SecondaryController {
         if (row == 2 && col == 2) return btn22;
         return null;
     }
+
     public void disableAllButtons() {
         btn00.setDisable(true);
         btn01.setDisable(true);

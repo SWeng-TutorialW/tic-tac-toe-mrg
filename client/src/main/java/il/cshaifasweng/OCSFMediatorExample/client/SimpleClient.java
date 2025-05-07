@@ -46,8 +46,8 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(msg.toString());
 		}
 
-		if (msg.toString().startsWith("StartGame")) {
-			EventBus.getDefault().post("StartGame");
+		if (msg.toString().startsWith("startGame")) {
+			EventBus.getDefault().post("startGame");
 			System.out.println("simple client StartGame");
 		}
 		if (msg.toString().startsWith("MOVE")) {

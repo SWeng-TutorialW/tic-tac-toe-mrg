@@ -16,7 +16,7 @@
          <font>
             <Font size="32.0" />
          </font></Label>
-      <Label fx:id="searchLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="217.0" layoutY="180.0" prefHeight="30.0" prefWidth="200.0" textAlignment="CENTER">
+      <Label fx:id="SearchLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="217.0" layoutY="180.0" prefHeight="30.0" prefWidth="200.0" textAlignment="CENTER">
          <font>
             <Font size="27.0" />
          </font></Label>

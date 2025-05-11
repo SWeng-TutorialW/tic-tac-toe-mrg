@@ -20,7 +20,7 @@ public class SimpleClient extends AbstractClient {
 	}
 
 	private void resetBoard() {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i< 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				board[i][j] = ' '; // Empty board
 			}
@@ -77,8 +77,8 @@ public class SimpleClient extends AbstractClient {
 
 	public static SimpleClient getClient() {
 		if (client == null) {
-			client = new SimpleClient("localhost", 3250);
-			//client = new SimpleClient("192.168.137.1", 3250);
+			//client = new SimpleClient("localhost", 3250);
+			client = new SimpleClient("172.20.10.2", 3250);
 		}
 		return client;
 	}
